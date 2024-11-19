@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 import math
+from spikingjelly.activation_based import functional
 
 def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None, optimizer=None, scheduler=None, save_path='./model', save_name='model'):
     if loss_function is None:
@@ -24,13 +25,14 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
 
         model.train()
         epoch_loss, fragment_count, puzzle_count = 0, 0, 0
-        for images, labels in tqdm(loader_train, total=math.ceil(len(loader_train.dataset) / loader_train.batch_size)):
+        for images, labels in tqdm(loader_train, total=math.ceil(len(loader_train.dataset) / loader_train.batch_size), desc='train'):
             images, labels = images.to(model.device), labels.to(model.device)
             optimizer.zero_grad()
             outputs = model(images)
             loss = loss_function(outputs.view(-1, model.block), labels.view(-1))
             loss.backward()
             optimizer.step()
+            functional.reset_net(model)
             
             correct = (outputs.argmax(dim=2) == labels).sum(dim=1)
             epoch_loss += loss.item()
@@ -45,7 +47,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
         model.eval()
         epoch_loss, fragment_count, puzzle_count = 0, 0, 0
         with torch.no_grad():
-            for images, labels in tqdm(loader_test, total=math.ceil(len(loader_test.dataset) / loader_test.batch_size)):
+            for images, labels in tqdm(loader_test, total=math.ceil(len(loader_test.dataset) / loader_test.batch_size), desc='test'):
                 images, labels = images.to(model.device), labels.to(model.device)
                 outputs = model(images)
                 loss = loss_function(outputs.view(-1, model.block), labels.view(-1))

@@ -2,8 +2,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
-from dataset import PuzzleDataset  # 假设PuzzleDataset已转换为PyTorch
-from model import PuzzleSolver  # 假设PuzzleSolver已转换为PyTorch
+from dataset import PuzzleDataset
+from model import PuzzleSolver
 from torch.utils.data import DataLoader
 
 def sample(model_segment, model_path, sample_height=4, sample_width=4, save_path='./figure', save_name='figure'):

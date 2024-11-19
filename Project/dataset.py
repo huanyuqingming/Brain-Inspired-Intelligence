@@ -26,13 +26,16 @@ class PuzzleDataset(Dataset):
         self.path = os.path.join(path, 'cifar-10-batches-py')
         self.group, self.batch_size, self.segment = group, batch_size, segment
         self.image = load_data(self.path, self.group)
+        if group == 'test':
+            k = len(self.image) // self.batch_size
+            self.image = self.image[:k * self.batch_size]
         self.transform = Compose([Resize([32 * self.segment, 32 * self.segment]), ToTensor()])
 
     def __len__(self):
         return self.image.shape[0]
 
     def __getitem__(self, index):
-        raw = self.transform(F.to_pil_image(self.image[index]))  # Convert to PIL image before applying transforms
+        raw = self.transform(F.to_pil_image(self.image[index]))
         cut = []
         for i in range(self.segment):
             for j in range(self.segment):

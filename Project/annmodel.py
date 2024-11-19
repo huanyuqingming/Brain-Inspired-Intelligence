@@ -57,10 +57,10 @@ class PuzzleSolver(nn.Module):
 
     def forward(self, x):
         shape = x.shape
-        x = x.view(-1, *shape[2:])  # Flatten batch for feature extraction
-        x = self.extractor(x)       # Feature extraction
-        x = x.view(shape[0], -1)    # Reshape for aggregation
+        x = x.view(-1, *shape[2:])
+        x = self.extractor(x)
+        x = x.view(shape[0], -1)
         x = self.aggregator(x)
         x = x.view(-1, self.block, self.block)
-        # Apply Sinkhorn algorithm if in eval mode
+
         return x if self.training else sinkhorn(x)

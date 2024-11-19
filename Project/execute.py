@@ -2,8 +2,9 @@ import sys
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from dataset import PuzzleDataset  # 假设PuzzleDataset已转换为PyTorch
-from model import PuzzleSolver  # 假设PuzzleSolver已转换为PyTorch
+from dataset import PuzzleDataset
+import annmodel
+import snnmodel
 import utils
 
 
@@ -20,16 +21,23 @@ class Logger:
         pass
 
 
-def execute(segment):
+def execute(segment, batch_size, T, net_type):
     # sys.stdout = Logger('./output/output.txt')
 
     print(f'<experiment> {segment}x{segment} puzzle')
-    model = PuzzleSolver(segment=segment)
-    model = model.cuda() if torch.cuda.is_available() else model  # 将模型加载到GPU
+    if net_type == 'snn':
+        print('<model> spiking neural network')
+        model = snnmodel.PuzzleSolver(segment=segment, T=T)
+    elif net_type == 'ann':
+        print('<model> artificial neural network')
+        model = annmodel.PuzzleSolver(segment=segment)
+    else:
+        raise ValueError('Invalid model type.')
+    model = model.cuda() if torch.cuda.is_available() else model
 
     # 加载训练和测试数据
-    train_dataset = PuzzleDataset('./dataset', group='train', batch_size=256, segment=segment)
-    test_dataset = PuzzleDataset('./dataset', group='test', batch_size=256, segment=segment)
+    train_dataset = PuzzleDataset('./dataset', group='train', batch_size=batch_size, segment=segment)
+    test_dataset = PuzzleDataset('./dataset', group='test', batch_size=batch_size, segment=segment)
     loader_train = DataLoader(train_dataset, batch_size=train_dataset.batch_size, shuffle=True)
     loader_test = DataLoader(test_dataset, batch_size=test_dataset.batch_size, shuffle=False)
 
@@ -53,6 +61,11 @@ if __name__ == '__main__':
     if torch.cuda.is_available():
         print('CUDA is available.')
         torch.cuda.manual_seed(0)
+    else:
+        print('CUDA is not available.')
 
     segment = 2
-    execute(segment)
+    batch_size = 128
+    T = 4
+    net_type = 'ann'
+    execute(segment, batch_size, T, net_type)

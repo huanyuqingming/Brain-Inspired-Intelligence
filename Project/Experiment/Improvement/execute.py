@@ -19,7 +19,7 @@ class Logger:
         pass
 
 
-def execute():
+def execute(segment):
     # sys.stdout = Logger('./output/output.txt')
 
     # print('<experiment> 2x2 puzzle')
@@ -36,16 +36,17 @@ def execute():
     # record_train, record_test = utils.train(model, (loader_train, loader_test), total_epoch=100, learning_rate=1e-3, scheduler=(10, 0.8), save_name='3x3')
     # utils.plot(record_train, record_test, save_name='3x3')
 
-    print('<experiment> 4x4 puzzle')
-    model = PuzzleSolver(segment=4)
-    loader_train = PuzzleDataset('./dataset', group='train', batch=256, segment=4)
-    loader_test = PuzzleDataset('./dataset', group='test', batch=256, segment=4)
-    record_train, record_test = utils.train(model, (loader_train, loader_test), total_epoch=300, learning_rate=1e-3, scheduler=(10, 0.8), save_name='4x4')
-    utils.plot(record_train, record_test, save_name='4x4')
+    print(f'<experiment> {segment}x{segment} puzzle')
+    model = PuzzleSolver(segment=segment)
+    loader_train = PuzzleDataset('./dataset', group='train', batch=256, segment=segment)
+    loader_test = PuzzleDataset('./dataset', group='test', batch=256, segment=segment)
+    record_train, record_test = utils.train(model, (loader_train, loader_test), total_epoch=300, learning_rate=1e-3, scheduler=(10, 0.8), save_name=f'{segment}x{segment}')
+    utils.plot(record_train, record_test, save_name=f'{segment}x{segment}')
 
 
 if __name__ == '__main__':
     np.random.seed(0)
     jt.set_global_seed(0)
-    # jt.flags.use_cuda = 1
-    execute()
+    jt.flags.use_cuda = 1
+    segment = 2
+    execute(segment)

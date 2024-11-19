@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import jittor as jt
 from jittor import nn
 from tqdm import tqdm
+import math
 
 def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None, optimizer=None, scheduler=None, save_path='./model', save_name='model'):
     if loss_function is None:
@@ -17,12 +18,12 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
     loader_train, loader_test = loader
     record_train, record_test = [], []
 
-    for epoch in tqdm(range(1, total_epoch+1)):
-        # print('[progress] epoch: {}'.format(epoch))
+    for epoch in range(1, total_epoch+1):
+        print('[progress] epoch: {}'.format(epoch))
 
         model.train()
         epoch_bias, fragment_count, puzzle_count = 0, 0, 0
-        for images, labels in loader_train:
+        for images, labels in tqdm(loader_train, total=math.ceil(len(loader_train)/loader_train.batch_size)):
             outputs = model(images)
             loss = loss_function(outputs.view(-1, model.block), labels.view(-1))
             optimizer.step(loss)
@@ -37,7 +38,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
         model.eval()
         epoch_bias, fragment_count, puzzle_count = 0, 0, 0
         with jt.no_grad():
-            for images, labels in loader_test:
+            for images, labels in tqdm(loader_test, total=math.ceil(len(loader_test)/loader_test.batch_size)):
                 outputs = model(images)
                 loss = loss_function(outputs.view(-1, model.block), labels.view(-1))
                 correct = (outputs.argmax(dim=2)[0] == labels).sum(dim=1)

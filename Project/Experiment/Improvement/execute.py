@@ -1,8 +1,9 @@
 import sys
 import numpy as np
-import jittor as jt
-from dataset import PuzzleDataset
-from model import PuzzleSolver
+import torch
+from torch.utils.data import DataLoader
+from dataset import PuzzleDataset  # 假设PuzzleDataset已转换为PyTorch
+from model import PuzzleSolver  # 假设PuzzleSolver已转换为PyTorch
 import utils
 
 
@@ -22,31 +23,36 @@ class Logger:
 def execute(segment):
     # sys.stdout = Logger('./output/output.txt')
 
-    # print('<experiment> 2x2 puzzle')
-    # model = PuzzleSolver(segment=2)
-    # loader_train = PuzzleDataset('./dataset', group='train', batch=256, segment=2)
-    # loader_test = PuzzleDataset('./dataset', group='test', batch=256, segment=2)
-    # record_train, record_test = utils.train(model, (loader_train, loader_test), total_epoch=100, learning_rate=1e-3, scheduler=(10, 0.8), save_name='2x2')
-    # utils.plot(record_train, record_test, save_name='2x2')
-
-    # print('<experiment> 3x3 puzzle')
-    # model = PuzzleSolver(segment=3)
-    # loader_train = PuzzleDataset('./dataset', group='train', batch=256, segment=3)
-    # loader_test = PuzzleDataset('./dataset', group='test', batch=256, segment=3)
-    # record_train, record_test = utils.train(model, (loader_train, loader_test), total_epoch=100, learning_rate=1e-3, scheduler=(10, 0.8), save_name='3x3')
-    # utils.plot(record_train, record_test, save_name='3x3')
-
     print(f'<experiment> {segment}x{segment} puzzle')
     model = PuzzleSolver(segment=segment)
-    loader_train = PuzzleDataset('./dataset', group='train', batch=256, segment=segment)
-    loader_test = PuzzleDataset('./dataset', group='test', batch=256, segment=segment)
-    record_train, record_test = utils.train(model, (loader_train, loader_test), total_epoch=300, learning_rate=1e-3, scheduler=(10, 0.8), save_name=f'{segment}x{segment}')
+    model = model.cuda() if torch.cuda.is_available() else model  # 将模型加载到GPU
+
+    # 加载训练和测试数据
+    train_dataset = PuzzleDataset('./dataset', group='train', batch_size=256, segment=segment)
+    test_dataset = PuzzleDataset('./dataset', group='test', batch_size=256, segment=segment)
+    loader_train = DataLoader(train_dataset, batch_size=train_dataset.batch_size, shuffle=True)
+    loader_test = DataLoader(test_dataset, batch_size=test_dataset.batch_size, shuffle=False)
+
+    # 设置训练参数
+    record_train, record_test = utils.train(
+        model,
+        (loader_train, loader_test),
+        total_epoch=300,
+        learning_rate=1e-3,
+        scheduler=(10, 0.8),
+        save_name=f'{segment}x{segment}'
+    )
+
+    # 绘制结果
     utils.plot(record_train, record_test, save_name=f'{segment}x{segment}')
 
 
 if __name__ == '__main__':
     np.random.seed(0)
-    jt.set_global_seed(0)
-    jt.flags.use_cuda = 1
+    torch.manual_seed(0)
+    if torch.cuda.is_available():
+        print('CUDA is available.')
+        torch.cuda.manual_seed(0)
+
     segment = 2
     execute(segment)

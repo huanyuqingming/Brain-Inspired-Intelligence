@@ -1,10 +1,10 @@
 import os
 import pickle
 import numpy as np
-from jittor.dataset.dataset import Dataset
-from jittor.transform import Compose, Resize, ToTensor
-from jittor import transform
-
+import torch
+from torch.utils.data import Dataset, DataLoader
+from torchvision.transforms import Compose, Resize, ToTensor
+import torchvision.transforms.functional as F
 
 def load_data(path, group='train'):
     image_list = []
@@ -21,24 +21,22 @@ def load_data(path, group='train'):
         image_list.append(np.array(data[b'data']))
     return np.concatenate(image_list, axis=0).reshape(-1, 3, 32, 32).transpose(0, 2, 3, 1)
 
-
 class PuzzleDataset(Dataset):
-    def __init__(self, path, group='train', batch=64, segment=2):
-        super().__init__()
+    def __init__(self, path, group='train', batch_size=64, segment=2):
         self.path = os.path.join(path, 'cifar-10-batches-py')
-        self.group, self.batch, self.segment = group, batch, segment
+        self.group, self.batch_size, self.segment = group, batch_size, segment
         self.image = load_data(self.path, self.group)
-        self.transform = Compose([Resize([32*self.segment, 32*self.segment]), ToTensor()])
-        self.set_attrs(batch_size=self.batch, shuffle=True)
+        self.transform = Compose([Resize([32 * self.segment, 32 * self.segment]), ToTensor()])
 
     def __len__(self):
         return self.image.shape[0]
-    
+
     def __getitem__(self, index):
-        raw, cut = self.transform(self.image[index]), []
+        raw = self.transform(F.to_pil_image(self.image[index]))  # Convert to PIL image before applying transforms
+        cut = []
         for i in range(self.segment):
             for j in range(self.segment):
-                cut.append(raw[:, 32*i: 32*(i+1), 32*j: 32*(j+1)])
-        image = np.stack(cut, axis=0)
-        label = np.random.permutation(self.segment**2)
+                cut.append(raw[:, 32 * i: 32 * (i + 1), 32 * j: 32 * (j + 1)])
+        image = torch.stack(cut, dim=0)
+        label = torch.randperm(self.segment ** 2)
         return image[label], label

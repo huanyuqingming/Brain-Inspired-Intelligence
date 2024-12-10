@@ -93,6 +93,7 @@ def plot(record_train, record_test, save_path='./figure', save_name='figure'):
     plt.legend()
     plt.grid()
     plt.savefig(os.path.join(save_path, f'{save_name}_epoch_loss.png'))
+    plt.show()
     plt.close()
 
     plt.figure(figsize=(8, 6))
@@ -104,6 +105,7 @@ def plot(record_train, record_test, save_path='./figure', save_name='figure'):
     plt.legend()
     plt.grid()
     plt.savefig(os.path.join(save_path, f'{save_name}_fragment_accuracy.png'))
+    plt.show()
     plt.close()
 
     plt.figure(figsize=(8, 6))
@@ -115,4 +117,5 @@ def plot(record_train, record_test, save_path='./figure', save_name='figure'):
     plt.legend()
     plt.grid()
     plt.savefig(os.path.join(save_path, f'{save_name}_puzzle_accuracy.png'))
+    plt.show()
     plt.close()

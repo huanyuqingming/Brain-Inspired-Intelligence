@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from dataset import PuzzleDataset
@@ -7,7 +6,7 @@ import annmodel
 import snnmodel
 import utils
 
-def execute(segment, batch_size, T, net_type):
+def execute(segment=2, batch_size=128, T=4, net_type='snn', total_epoch=10, lr=1e-3, scheduler=(10, 0.8)):
     print(f'Solving {segment}x{segment} puzzle')
     if net_type == 'snn':
         print('Using SNN')
@@ -29,31 +28,34 @@ def execute(segment, batch_size, T, net_type):
     record_train, record_test = utils.train(
         model,
         (loader_train, loader_test),
-        total_epoch=300,
-        learning_rate=1e-3,
-        scheduler=(10, 0.8),
-        save_name=f'{segment}x{segment}'
+        total_epoch=total_epoch,
+        learning_rate=lr,
+        scheduler=scheduler,
+        save_name=f'{net_type}_{segment}x{segment}'
     )
 
     # 绘制结果
-    utils.plot(record_train, record_test, save_name=f'{segment}x{segment}')
+    utils.plot(record_train, record_test, save_name=f'{net_type}_{segment}x{segment}')
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='执行模型训练和测试')
-    parser.add_argument('--segment', type=int, default=2, help='拼图块分割数量')
-    parser.add_argument('--batch_size', type=int, default=128, help='批处理大小')
-    parser.add_argument('--T', type=int, default=4, help='脉冲编码时间间隔')
-    parser.add_argument('--net_type', type=str, default='snn', help='网络类型（\'snn\'/\'ann\'）')
+def main(segment=2, batch_size=128, T=4, net_type='snn', total_epoch=10, lr=1e-3, scheduler=(10, 0.8)):
 
-    args = parser.parse_args()
-
-    np.random.seed(0)
-    torch.manual_seed(0)
     if torch.cuda.is_available():
         print('Using CUDA')
-        torch.cuda.manual_seed(0)
     else:
         print('Using CPU')
 
-    execute(args.segment, args.batch_size, args.T, args.net_type)
+    execute(segment, batch_size, T, net_type, total_epoch, lr, scheduler)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--segment', type=int, default=2)
+    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--T', type=int, default=4)
+    parser.add_argument('--net_type', type=str, default='snn')
+    parser.add_argument('--total_epoch', type=int, default=10)
+    parser.add_argument('--lr', type=float, default=1e-3)
+    parser.add_argument('--scheduler', type=float, nargs=2, default=(10, 0.8))
+
+    args = parser.parse_args()
+    main(args.segment, args.batch_size, args.T, args.net_type, args.total_epoch, args.lr, args.scheduler)

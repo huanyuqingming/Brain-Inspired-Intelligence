@@ -2,7 +2,7 @@ import os
 import pickle
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, ToTensor
 import torchvision.transforms.functional as F
 

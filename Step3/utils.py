@@ -21,13 +21,14 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
     record_train, record_test = [], []
 
     for epoch in range(1, total_epoch + 1):
+        print(f'Epoch {epoch}/{total_epoch}')
 
         model.train()
         epoch_loss, fragment_count, puzzle_count = 0, 0, 0
         rounds = math.ceil(len(loader_train.dataset) / loader_train.batch_size)
 
-        pbar = tqdm(loader_train, total=rounds, desc=f'Train {epoch}/{total_epoch}')
-        for images, labels in pbar:
+        # pbar = tqdm(loader_train, total=rounds, desc=f'Train {epoch}/{total_epoch}')
+        for images, labels in loader_train:
             images, labels = images.to(model.device), labels.to(model.device)
             optimizer.zero_grad()
             outputs = model(images)
@@ -41,7 +42,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
             fragment_count += correct.sum().item()
             puzzle_count += (correct == model.block).sum().item()
 
-            pbar.set_postfix({'loss': f'{loss.item():.4f}'})
+            # pbar.set_postfix({'loss': f'{loss.item():.4f}'})
 
         epoch_loss /= rounds
         fragment_accuracy = fragment_count / (model.block * len(loader_train.dataset))
@@ -54,8 +55,8 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
         rounds = math.ceil(len(loader_test.dataset) / loader_test.batch_size)
 
         with torch.no_grad():
-            pbar = tqdm(loader_test, total=rounds, desc=f'Test {epoch}/{total_epoch}')
-            for images, labels in pbar:
+            # pbar = tqdm(loader_test, total=rounds, desc=f'Test {epoch}/{total_epoch}')
+            for images, labels in loader_test:
                 images, labels = images.to(model.device), labels.to(model.device)
                 outputs = model(images)
                 loss = loss_function(outputs.view(-1, model.block), labels.view(-1))
@@ -65,7 +66,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
                 fragment_count += correct.sum().item()
                 puzzle_count += (correct == model.block).sum().item()
 
-                pbar.set_postfix({'loss': f'{loss.item():.4f}'})
+                # pbar.set_postfix({'loss': f'{loss.item():.4f}'})
 
         epoch_loss /= rounds
         fragment_accuracy = fragment_count / (model.block * len(loader_test.dataset))

@@ -5,9 +5,9 @@ from pygmtools import sinkhorn
 pygmtools.BACKEND = 'pytorch'
 
 
-class NaiveCNN(nn.Module):
+class CNN(nn.Module):
     def __init__(self, segment=2):
-        super(NaiveCNN, self).__init__()
+        super(CNN, self).__init__()
         self.segment, self.block = segment, segment**2
         self.feature = nn.Sequential(
             nn.Conv2d(3, 32, 3, 1, 1),
@@ -29,9 +29,9 @@ class NaiveCNN(nn.Module):
         return self.feature(x)
 
 
-class NaiveFCN(nn.Module):
+class FCN(nn.Module):
     def __init__(self, segment=2):
-        super(NaiveFCN, self).__init__()
+        super(FCN, self).__init__()
         self.segment, self.block = segment, segment**2
         self.network = nn.Sequential(
             nn.Linear(1024 * self.block, 4096),
@@ -51,8 +51,8 @@ class PuzzleSolver(nn.Module):
     def __init__(self, segment=2):
         super(PuzzleSolver, self).__init__()
         self.segment, self.block = segment, segment**2
-        self.extractor = NaiveCNN(segment=self.segment)
-        self.aggregator = NaiveFCN(segment=self.segment)
+        self.extractor = CNN(segment=self.segment)
+        self.aggregator = FCN(segment=self.segment)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     def forward(self, x):

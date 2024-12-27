@@ -7,9 +7,9 @@ from spikingjelly.activation_based import neuron, functional, surrogate, layer
 pygmtools.BACKEND = 'pytorch'
 
 
-class Naive_CNN(nn.Module):
+class CNN(nn.Module):
     def __init__(self, segment=2, T=8):
-        super(Naive_CNN, self).__init__()
+        super(CNN, self).__init__()
         self.segment, self.block = segment, segment**2
         self.T = T
         
@@ -45,9 +45,9 @@ class Naive_CNN(nn.Module):
         return out.mean(dim=0)
 
 
-class Naive_FCN(nn.Module):
+class FCN(nn.Module):
     def __init__(self, segment=2, T=8):
-        super(Naive_FCN, self).__init__()
+        super(FCN, self).__init__()
         self.segment, self.block = segment, segment**2
         self.T = T
         
@@ -85,12 +85,12 @@ class Naive_FCN(nn.Module):
         return out.mean(dim=0)
 
 
-class PuzzleSolver(nn.Module):
+class DPN(nn.Module):
     def __init__(self, segment=2, T=8):
-        super(PuzzleSolver, self).__init__()
+        super(DPN, self).__init__()
         self.segment, self.block = segment, segment**2
-        self.extractor = Naive_CNN(segment=self.segment, T=T)
-        self.aggregator = Naive_FCN(segment=self.segment, T=T)
+        self.extractor = CNN(segment=self.segment, T=T)
+        self.aggregator = FCN(segment=self.segment, T=T)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         functional.set_step_mode(self, step_mode='m')

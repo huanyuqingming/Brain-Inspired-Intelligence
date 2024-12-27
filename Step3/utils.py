@@ -28,6 +28,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
         rounds = math.ceil(len(loader_train.dataset) / loader_train.batch_size)
 
         # pbar = tqdm(loader_train, total=rounds, desc=f'Train {epoch}/{total_epoch}')
+        # for images, labels in pbar:
         for images, labels in loader_train:
             images, labels = images.to(model.device), labels.to(model.device)
             optimizer.zero_grad()
@@ -48,7 +49,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
         fragment_accuracy = fragment_count / (model.block * len(loader_train.dataset))
         puzzle_accuracy = puzzle_count / len(loader_train.dataset)
         record_train.append([epoch_loss, fragment_accuracy, puzzle_accuracy])
-        print(f'total loss: {epoch_loss:.4f}, fragment accuracy: {fragment_accuracy:.2%}, puzzle accuracy: {puzzle_accuracy:.2%}')
+        print(f'Training: total loss: {epoch_loss:.4f}, fragment accuracy: {fragment_accuracy:.2%}, puzzle accuracy: {puzzle_accuracy:.2%}')
 
         model.eval()
         epoch_loss, fragment_count, puzzle_count = 0, 0, 0
@@ -56,6 +57,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
 
         with torch.no_grad():
             # pbar = tqdm(loader_test, total=rounds, desc=f'Test {epoch}/{total_epoch}')
+            # for images, labels in pbar:
             for images, labels in loader_test:
                 images, labels = images.to(model.device), labels.to(model.device)
                 outputs = model(images)
@@ -72,7 +74,7 @@ def train(model, loader, total_epoch=10, learning_rate=1e-3, loss_function=None,
         fragment_accuracy = fragment_count / (model.block * len(loader_test.dataset))
         puzzle_accuracy = puzzle_count / len(loader_test.dataset)
         record_test.append([epoch_loss, fragment_accuracy, puzzle_accuracy])
-        print(f'total loss: {epoch_loss:.4f}, fragment accuracy: {fragment_accuracy:.2%}, puzzle accuracy: {puzzle_accuracy:.2%}')
+        print(f'Testing: total loss: {epoch_loss:.4f}, fragment accuracy: {fragment_accuracy:.2%}, puzzle accuracy: {puzzle_accuracy:.2%}')
 
         if scheduler is not None:
             scheduler.step()

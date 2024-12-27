@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 
 def sample(model_segment, model_path, sample_height=4, sample_width=4, save_path='./figure', save_name='figure', net_type='snn'):
     # 加载数据集和模型
-    dataset = PuzzleDataset(path='./dataset', group='test', batch_size=sample_height * sample_width, segment=model_segment)
+    dataset = PuzzleDataset(path='./datasets', group='test', batch_size=sample_height * sample_width, segment=model_segment)
     loader = DataLoader(dataset, batch_size=sample_height * sample_width, shuffle=False)
     if net_type == 'snn':
         model = snnmodel.PuzzleSolver(segment=model_segment)

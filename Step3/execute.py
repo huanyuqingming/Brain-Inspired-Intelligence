@@ -1,6 +1,7 @@
 import argparse
 import torch
 from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
 from dataset import PuzzleDataset
 import annmodel
 import snnmodel
@@ -18,9 +19,18 @@ def execute(segment=2, batch_size=128, T=4, net_type='snn', total_epoch=10, lr=1
         raise ValueError('Invalid model type.')
     model = model.cuda() if torch.cuda.is_available() else model
 
+    # 下载cifar10数据集
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
+    trainset = datasets.CIFAR10(root='./datasets', train=True, download=True, transform=transform)
+    testset = datasets.CIFAR10(root='./datasets', train=False, download=True, transform=transform)
+    
+
     # 加载训练和测试数据
-    train_dataset = PuzzleDataset('./dataset', group='train', batch_size=batch_size, segment=segment)
-    test_dataset = PuzzleDataset('./dataset', group='test', batch_size=batch_size, segment=segment)
+    train_dataset = PuzzleDataset('./datasets', group='train', batch_size=batch_size, segment=segment)
+    test_dataset = PuzzleDataset('./datasets', group='test', batch_size=batch_size, segment=segment)
     loader_train = DataLoader(train_dataset, batch_size=train_dataset.batch_size, shuffle=True)
     loader_test = DataLoader(test_dataset, batch_size=test_dataset.batch_size, shuffle=False)
 

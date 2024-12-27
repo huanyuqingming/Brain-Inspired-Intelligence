@@ -262,3 +262,73 @@ spend 0.5734683911005656 min
 
 Execution time: 3.21 min 
 
+Epoch: 1
+
+
+Average test loss: 0.4797  Accuracy: 8030/10000 (80.30%)
+
+spend 0.6067630887031555 min
+
+Epoch: 2
+
+
+Average test loss: 0.4622  Accuracy: 8035/10000 (80.35%)
+
+spend 0.6084828813870747 min
+
+Epoch: 3
+
+
+Average test loss: 0.4633  Accuracy: 8033/10000 (80.33%)
+
+spend 0.6207534988721212 min
+
+Epoch: 4
+
+
+Average test loss: 0.4526  Accuracy: 8021/10000 (80.21%)
+
+spend 0.6272353331247965 min
+
+Epoch: 5
+
+
+Average test loss: 0.4492  Accuracy: 8035/10000 (80.35%)
+
+spend 0.6325498461723328 min
+
+Epoch: 1
+
+
+Average test loss: 0.4869  Accuracy: 7983/10000 (79.83%)
+
+spend 0.15847396453221638 min
+
+Epoch: 2
+
+
+Average test loss: 0.4708  Accuracy: 7979/10000 (79.79%)
+
+spend 0.14550676743189495 min
+
+Epoch: 3
+
+
+Average test loss: 0.4616  Accuracy: 7946/10000 (79.46%)
+
+spend 0.1434997359911601 min
+
+Epoch: 4
+
+
+Average test loss: 0.4581  Accuracy: 7972/10000 (79.72%)
+
+spend 0.1457615852355957 min
+
+Epoch: 5
+
+
+Average test loss: 0.4523  Accuracy: 7962/10000 (79.62%)
+
+spend 0.14605654875437418 min
+

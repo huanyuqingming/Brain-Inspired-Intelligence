@@ -1,2 +1,0 @@
-<__main__.test.<locals>.parser object at 0x7f17717466b0>
-test.py

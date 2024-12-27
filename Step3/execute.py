@@ -11,10 +11,10 @@ def execute(segment=2, batch_size=128, T=4, net_type='snn', total_epoch=10, lr=1
     print(f'Solving {segment}x{segment} puzzle')
     if net_type == 'snn':
         print('Using SNN')
-        model = snnmodel.PuzzleSolver(segment=segment, T=T)
+        model = snnmodel.DPN(segment=segment, T=T)
     elif net_type == 'ann':
         print('Using ANN')
-        model = annmodel.PuzzleSolver(segment=segment)
+        model = annmodel.DPN(segment=segment)
     else:
         raise ValueError('Invalid model type.')
     model = model.cuda() if torch.cuda.is_available() else model

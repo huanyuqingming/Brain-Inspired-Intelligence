@@ -47,9 +47,9 @@ class FCN(nn.Module):
         return self.network(x)
 
 
-class PuzzleSolver(nn.Module):
+class DPN(nn.Module):
     def __init__(self, segment=2):
-        super(PuzzleSolver, self).__init__()
+        super(DPN, self).__init__()
         self.segment, self.block = segment, segment**2
         self.extractor = CNN(segment=self.segment)
         self.aggregator = FCN(segment=self.segment)

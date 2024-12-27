@@ -12,9 +12,9 @@ def sample(model_segment, model_path, sample_height=4, sample_width=4, save_path
     dataset = PuzzleDataset(path='./datasets', group='test', batch_size=sample_height * sample_width, segment=model_segment)
     loader = DataLoader(dataset, batch_size=sample_height * sample_width, shuffle=False)
     if net_type == 'snn':
-        model = snnmodel.PuzzleSolver(segment=model_segment)
+        model = snnmodel.DPN(segment=model_segment)
     elif net_type == 'ann':
-        model = annmodel.PuzzleSolver(segment=model_segment)
+        model = annmodel.DPN(segment=model_segment)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.load_state_dict(torch.load(model_path, weights_only=True))
     model.to(device)
